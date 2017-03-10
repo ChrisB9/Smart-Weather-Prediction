@@ -1,4 +1,5 @@
 .idea/
 .phpintel/
 vendor/
-
+build/
+data/*.db

@@ -27,6 +27,7 @@ class RoutesTest extends TestCase {
 		$this->sqliteDatabaseConnection = new Database\DatabaseFactory("sqliteTest");
         $this->weatherObjectAdapter = new Adapter\WeatherObjectAdapter($this->sqliteDatabaseConnection);
         $this->klein_app = (new WOR($this->weatherObjectAdapter))->getWeatherRoutes($this->klein_app);
+        $_SERVER["CONTENT_TYPE"] = 'application/x-www-form-urlencoded';
 	}
 
 	protected function dispatchAndReturnOutput($request = null, $response = null)
@@ -77,7 +78,7 @@ class RoutesTest extends TestCase {
     		[
     			"route" => ["/weather/-1"], 
     			"result" => json_encode(false)
-    		]/*, --> TODO: Add test for PATCH & PUT
+    		]/*, --> TODO: Add test for PATCH & PUT ,
     		[
     			"route" => ["/weather/".($wObject != null ? $wObject->getUId() : "-1"), "PUT", [
     				"json" => '{"temperature": 33,"humidity": 20.1,"pressure": 994.4,"brightness": 90,"sensorObjectId": 1}'

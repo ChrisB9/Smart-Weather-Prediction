@@ -1,0 +1,24 @@
+language: php
+addons:
+  code_climate:
+    repo_token: ca147b9a850ef5a8beb6868d69ea93e4a42a1c0a45c9701f170498bb4ee16585
+
+matrix:
+  allow_failures:
+  - php: nightly
+  fast_finish: true
+  include:
+  - php: 7.0
+  - php: 7.1
+  - php: nightly
+
+install:
+- composer install --dev --no-interaction --prefer-dist
+- phpenv rehash
+
+script:
+- composer test
+
+notifications:
+  on_success: never
+  on_failure: always
