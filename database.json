@@ -1,0 +1,50 @@
+{
+	"sqlite": {
+		"weatherdata": [
+			"id INTEGER PRIMARY KEY",
+			"temperature REAL",
+			"humidity REAL",
+			"pressure REAL",
+			"brightness REAL",
+			"sensorObjectId INTEGER",
+			"date TEXT",
+			"deleted INTEGER"
+		],
+		"sensorobject": [
+			"id INTEGER",
+			"registerToken TEXT",
+			"name TEXT",
+			"date TEXT",
+			"configObject INTEGER",
+			"deleted INTEGER"
+		],
+		"configobject": [
+			"id INTEGER",
+			"configjson TEXT"
+		]
+	},
+	"sqliteTest": {
+		"weatherdata": [
+			"id INTEGER PRIMARY KEY",
+			"temperature REAL",
+			"humidity REAL",
+			"pressure REAL",
+			"brightness REAL",
+			"sensorObjectId INTEGER",
+			"date TEXT",
+			"deleted INTEGER"
+		],
+		"sensorobject": [
+			"id INTEGER",
+			"registerToken TEXT",
+			"name TEXT",
+			"date TEXT",
+			"configObject INTEGER",
+			"deleted INTEGER"
+		],
+		"configobject": [
+			"id INTEGER",
+			"configjson TEXT"
+		]
+	}
+}

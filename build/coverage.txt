@@ -1,0 +1,28 @@
+
+
+Code Coverage Report:      
+  2017-03-10 14:48:52      
+                           
+ Summary:                  
+  Classes:  7.69% (1/13)   
+  Methods: 46.23% (49/106) 
+  Lines:   55.09% (287/521)
+
+\cbenco\Config::DatabaseConfig
+  Methods:  50.00% ( 1/ 2)   Lines:  66.67% (  2/  3)
+\cbenco\Database::DatabaseFactory
+  Methods:  60.00% ( 3/ 5)   Lines:  63.16% ( 12/ 19)
+\cbenco\Forecaster\Adapter::WeatherObjectAdapter
+  Methods:  42.86% ( 3/ 7)   Lines:  80.30% ( 53/ 66)
+\cbenco\Forecaster\Models::WeatherObjectModel
+  Methods:  61.54% ( 8/13)   Lines:  85.71% ( 36/ 42)
+\cbenco\Routes::Router
+  Methods:  38.46% ( 5/13)   Lines:  25.71% (  9/ 35)
+\cbenco\Routes::WeatherObjectRoutes
+  Methods:  50.00% ( 4/ 8)   Lines:  54.35% ( 25/ 46)
+\cbenco\Science\Math\Arithmetic::BasicOperations
+  Methods:  80.00% ( 4/ 5)   Lines:  92.31% ( 12/ 13)
+\cbenco\Science\Math\Regression::LinearRegression
+  Methods: 100.00% (10/10)   Lines: 100.00% ( 37/ 37)
+\cbenco\Science\Math\Regression::QuadraticRegression
+  Methods:  84.62% (11/13)   Lines:  97.67% ( 84/ 86)

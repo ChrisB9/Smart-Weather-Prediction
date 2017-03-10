@@ -1,0 +1,29 @@
+{
+    "name": "cbenco/smartweatherprediction",
+    "description": "personal weather prediction with IoT-devices",
+    "type": "project",
+    "require": {
+        "klein/klein": "^2.1",
+        "catfan/medoo": "^1.2",
+        "php": ">=7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "cbenco\\": "src/cbenco"
+        }
+    },
+    "license": "postcard-licence",
+    "authors": [
+        {
+            "name": "Chris Ben",
+            "email": "chris@cben.co"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require-dev": {
+        "phpunit/phpunit": "^6.0"
+    },
+    "scripts": {
+        "test": "phpunit -c tests/phpunit.xml"
+    }
+}

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="testsuite" tests="32" assertions="46" errors="0" failures="0" skipped="0" time="0.296388">
+    <testsuite name="cbenco\Tests\APITests\DatabaseTest" file="/usr/local/var/www/htdocs/swp2/tests/APITests/DatabaseTest.php" tests="7" assertions="16" errors="0" failures="0" skipped="0" time="0.084092">
+      <testcase name="testInsertQueryWithWeatherObjectWithCorrectData" class="cbenco\Tests\APITests\DatabaseTest" file="/usr/local/var/www/htdocs/swp2/tests/APITests/DatabaseTest.php" line="32" assertions="1" time="0.022734"/>
+      <testcase name="testSelectQueryWithWeatherObjectWithCorrectData" class="cbenco\Tests\APITests\DatabaseTest" file="/usr/local/var/www/htdocs/swp2/tests/APITests/DatabaseTest.php" line="39" assertions="6" time="0.012462"/>
+      <testcase name="testUpdateQueryWithWeatherObjectWithCorrectData" class="cbenco\Tests\APITests\DatabaseTest" file="/usr/local/var/www/htdocs/swp2/tests/APITests/DatabaseTest.php" line="51" assertions="2" time="0.012136"/>
+      <testcase name="testUpdateQueryWithWeatherObjectWithWrongInputVariable" class="cbenco\Tests\APITests\DatabaseTest" file="/usr/local/var/www/htdocs/swp2/tests/APITests/DatabaseTest.php" line="61" assertions="2" time="0.008863"/>
+      <testcase name="testReplaceQueryWithWeatherObjectWithCorrectData" class="cbenco\Tests\APITests\DatabaseTest" file="/usr/local/var/www/htdocs/swp2/tests/APITests/DatabaseTest.php" line="67" assertions="2" time="0.013857"/>
+      <testcase name="testDeleteQueryWithWeatherObjectWithCorrectData" class="cbenco\Tests\APITests\DatabaseTest" file="/usr/local/var/www/htdocs/swp2/tests/APITests/DatabaseTest.php" line="78" assertions="2" time="0.008457"/>
+      <testcase name="testDeleteQueryWithWeatherObjectWithNegativeId" class="cbenco\Tests\APITests\DatabaseTest" file="/usr/local/var/www/htdocs/swp2/tests/APITests/DatabaseTest.php" line="90" assertions="1" time="0.005583"/>
+    </testsuite>
+    <testsuite name="cbenco\Tests\APITests\RoutesTest" file="/usr/local/var/www/htdocs/swp2/tests/APITests/RoutesTest.php" tests="1" assertions="6" errors="0" failures="0" skipped="0" time="0.137522">
+      <testcase name="testWeatherRoutes" class="cbenco\Tests\APITests\RoutesTest" file="/usr/local/var/www/htdocs/swp2/tests/APITests/RoutesTest.php" line="55" assertions="6" time="0.137522"/>
+    </testsuite>
+    <testsuite name="cbenco\Tests\MathTests\ArithmeticTest" file="/usr/local/var/www/htdocs/swp2/tests/ScienceTests/ArithmeticTest.php" tests="20" assertions="20" errors="0" failures="0" skipped="0" time="0.045998">
+      <testsuite name="cbenco\Tests\MathTests\ArithmeticTest::testAddition" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.009303">
+        <testcase name="testAddition with data set #0" assertions="1" time="0.003422"/>
+        <testcase name="testAddition with data set #1" assertions="1" time="0.001723"/>
+        <testcase name="testAddition with data set #2" assertions="1" time="0.002220"/>
+        <testcase name="testAddition with data set #3" assertions="1" time="0.001938"/>
+      </testsuite>
+      <testsuite name="cbenco\Tests\MathTests\ArithmeticTest::testSubtraction" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.008004">
+        <testcase name="testSubtraction with data set #0" assertions="1" time="0.002095"/>
+        <testcase name="testSubtraction with data set #1" assertions="1" time="0.001630"/>
+        <testcase name="testSubtraction with data set #2" assertions="1" time="0.002318"/>
+        <testcase name="testSubtraction with data set #3" assertions="1" time="0.001961"/>
+      </testsuite>
+      <testsuite name="cbenco\Tests\MathTests\ArithmeticTest::testMultiplication" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.014465">
+        <testcase name="testMultiplication with data set #0" assertions="1" time="0.006781"/>
+        <testcase name="testMultiplication with data set #1" assertions="1" time="0.002430"/>
+        <testcase name="testMultiplication with data set #2" assertions="1" time="0.002494"/>
+        <testcase name="testMultiplication with data set #3" assertions="1" time="0.002760"/>
+      </testsuite>
+      <testsuite name="cbenco\Tests\MathTests\ArithmeticTest::testDividation" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.007222">
+        <testcase name="testDividation with data set #0" assertions="1" time="0.001826"/>
+        <testcase name="testDividation with data set #1" assertions="1" time="0.002122"/>
+        <testcase name="testDividation with data set #2" assertions="1" time="0.001618"/>
+        <testcase name="testDividation with data set #3" assertions="1" time="0.001656"/>
+      </testsuite>
+      <testsuite name="cbenco\Tests\MathTests\ArithmeticTest::testCalculatingTheAverageOfADataset" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.007004">
+        <testcase name="testCalculatingTheAverageOfADataset with data set #0" assertions="1" time="0.001675"/>
+        <testcase name="testCalculatingTheAverageOfADataset with data set #1" assertions="1" time="0.001661"/>
+        <testcase name="testCalculatingTheAverageOfADataset with data set #2" assertions="1" time="0.002021"/>
+        <testcase name="testCalculatingTheAverageOfADataset with data set #3" assertions="1" time="0.001647"/>
+      </testsuite>
+    </testsuite>
+    <testsuite name="cbenco\Tests\MathTests\RegressionTests" file="/usr/local/var/www/htdocs/swp2/tests/ScienceTests/RegressionTest.php" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.028776">
+      <testsuite name="cbenco\Tests\MathTests\RegressionTests::testQuadraticRegression" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="0.018995">
+        <testcase name="testQuadraticRegression with data set #0" assertions="1" time="0.010226"/>
+        <testcase name="testQuadraticRegression with data set #1" assertions="1" time="0.008769"/>
+      </testsuite>
+      <testsuite name="cbenco\Tests\MathTests\RegressionTests::testLinearRegression" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="0.009781">
+        <testcase name="testLinearRegression with data set #0" assertions="1" time="0.004424"/>
+        <testcase name="testLinearRegression with data set #1" assertions="1" time="0.005357"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>
