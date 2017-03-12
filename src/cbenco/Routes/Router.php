@@ -42,51 +42,6 @@ class Router
             echo $code;
         });
 
-        
-        $klein->respond('GET', '/config/[:id]', [$this, 'getDeviceConfig']);
-        $klein->respond('GET', '/devices', [$this, 'listDevices']);
-        $klein->respond('POST', '/device', [$this, 'addNewDevice']);
-        $klein->respond('DELETE', '/device', [$this, 'deleteDevices']);
-        $klein->respond('GET', '/device/[:id]', [$this, 'getDeviceObject']);
-        $klein->respond('DELETE', '/device/[:id]', [$this, 'deleteDevice']);
-        $klein->respond('PATCH', '/device/[:id]', [$this, 'updateDeviceObject']);
         return $klein;
-    }
-
-    
-
-    public function getDeviceConfig(Request $request, Response $response) {
-        echo "Hello";
-        $response->body("no");
-    }
-
-    public function listDevices(Request $request, Response $response) {
-        echo "Hello";
-        $response->body("no");
-    }
-
-    public function getDeviceObject(Request $request, Response $response) {
-        echo "Hello";
-        $response->body("no");
-    }
-
-    public function addNewDevice(Request $request, Response $response) {
-        echo "Hello";
-        $response->body("no");
-    }
-
-    public function updateDeviceObject(Request $request, Response $response) {
-        echo "Hello";
-        $response->body("no");
-    }
-
-    public function deleteDevices(Request $request, Response $response) {
-        echo "Hello";
-        $response->body("no");
-    }
-
-    public function deleteDevice(Request $request, Response $response) {
-        echo "Hello";
-        $response->body("no");
     }
 }

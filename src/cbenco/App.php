@@ -3,8 +3,10 @@
 namespace cbenco;
 use cbenco\Routes\Router;
 use cbenco\Routes\WeatherObjectRoutes as WOR;
-use cbenco\Database;
-use cbenco\Forecaster\Adapter;
+use cbenco\Routes\SensorDeviceRoutes as SDR;
+use cbenco\Database\DatabaseFactory;
+use cbenco\Forecaster\Adapter\WeatherObjectAdapter;
+use cbenco\Forecaster\Adapter\SensorDeviceAdapter;
 
 class App
 {
@@ -14,13 +16,21 @@ class App
         $klein = new Router("/swp2/");
         $this->router = $klein->getRouter();
         $this->appendWeatherRoutes();
+        $this->appendDeviceRoutes();
         $klein->dispatch();
     }
 
     public function appendWeatherRoutes() {
-    	$sqliteDatabase = new Database\DatabaseFactory("sqlite");
-        $woAdapter = new Adapter\WeatherObjectAdapter($sqliteDatabase);
+    	$sqliteDatabase = new DatabaseFactory("sqlite");
+        $woAdapter = new WeatherObjectAdapter($sqliteDatabase);
         $woRouter = new WOR($woAdapter);
         $this->router = $woRouter->getWeatherRoutes($this->router);
+    }
+
+    public function appendDeviceRoutes() {
+        $sqliteDatabase = new DatabaseFactory("sqlite");
+        $sdAdapter = new SensorDeviceAdapter($sqliteDatabase);
+        $sdRouter = new SDR($sdAdapter);
+        $this->router = $sdRouter->getSensorRoutes($this->router);
     }
 }

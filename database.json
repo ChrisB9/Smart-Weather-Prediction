@@ -11,7 +11,7 @@
 			"deleted INTEGER"
 		],
 		"sensorobject": [
-			"id INTEGER",
+			"id INTEGER PRIMARY KEY",
 			"registerToken TEXT",
 			"name TEXT",
 			"date TEXT",
@@ -19,7 +19,7 @@
 			"deleted INTEGER"
 		],
 		"configobject": [
-			"id INTEGER",
+			"id INTEGER PRIMARY KEY",
 			"configjson TEXT"
 		]
 	},
@@ -35,7 +35,7 @@
 			"deleted INTEGER"
 		],
 		"sensorobject": [
-			"id INTEGER",
+			"id INTEGER PRIMARY KEY",
 			"registerToken TEXT",
 			"name TEXT",
 			"date TEXT",
@@ -43,7 +43,7 @@
 			"deleted INTEGER"
 		],
 		"configobject": [
-			"id INTEGER",
+			"id INTEGER PRIMARY KEY",
 			"configjson TEXT"
 		]
 	}

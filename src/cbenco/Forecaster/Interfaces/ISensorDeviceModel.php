@@ -45,10 +45,10 @@ interface ISensorDeviceModel
     /**
      * @return ConfigurationModel
      */
-    public function getConfigObject() : ConfigurationModel;
+    public function getConfigObject() : int;
 
     /**
      * @param ConfigurationModel $configObject
      */
-    public function setConfigObject(ConfigurationModel $configObject);
+    public function setConfigObject(int $configObjectId);
 }

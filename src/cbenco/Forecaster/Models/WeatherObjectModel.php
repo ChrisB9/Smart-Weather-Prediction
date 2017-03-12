@@ -62,9 +62,6 @@ class WeatherObjectModel implements Interfaces\IWeatherObjectModel
      */
     public function setTemperature(float $temperature)
     {
-        if (!is_numeric($temperature)) {
-            throw new \InvalidArgumentException("argument should be numeric");
-        }
         $this->temperature = $temperature;
     }
 
@@ -78,9 +75,6 @@ class WeatherObjectModel implements Interfaces\IWeatherObjectModel
      */
     public function setHumidity(float $humidity)
     {
-        if (!is_numeric($humidity)) {
-            throw new \InvalidArgumentException("argument should be numeric");
-        }
         $this->humidity = $humidity;
         return true;
     }
@@ -91,9 +85,6 @@ class WeatherObjectModel implements Interfaces\IWeatherObjectModel
      */
     public function setPressure(float $pressure)
     {
-        if (!is_numeric($pressure)) {
-            throw new \InvalidArgumentException("argument should be numeric");
-        }
         $this->pressure = $pressure;
     }
 
@@ -103,9 +94,6 @@ class WeatherObjectModel implements Interfaces\IWeatherObjectModel
      */
     public function setBrightness(float $brightness)
     {
-        if (!is_numeric($brightness)) {
-            throw new \InvalidArgumentException("argument should be numeric");
-        }
         $this->brightness = $brightness;
     }
 
@@ -113,13 +101,16 @@ class WeatherObjectModel implements Interfaces\IWeatherObjectModel
     {
         $jsonObject = json_decode($json);
         if (isset($jsonObject->id)) {
-            $this->uid = $jsonObject->id;
+            $this->setUId($jsonObject->id);
         }
         $this->sensorObjectId = $jsonObject->sensorObjectId;
         $this->setBrightness((float) $jsonObject->brightness);
         $this->setHumidity((float) $jsonObject->humidity);
         $this->setTemperature((float) $jsonObject->temperature);
         $this->setPressure((float) $jsonObject->pressure);
+        if (isset($jsonObject->date)) {
+            $this->creationDate = new \DateTime($jsonObject->date);
+        }
     }
 
     /**

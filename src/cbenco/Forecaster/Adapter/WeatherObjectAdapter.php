@@ -1,6 +1,7 @@
 <?php
 
 namespace cbenco\Forecaster\Adapter;
+use cbenco\Forecaster\Adapter\SensorDeviceAdapter;
 use cbenco\Database;
 use cbenco\Forecaster\Models;
 use cbenco\Config;
@@ -16,6 +17,9 @@ class WeatherObjectAdapter {
 		);
 	}
 	public function addWeatherObjectToDatabase(Models\WeatherObjectModel $weatherObject) : bool {
+		if (!$this->validateSensorObject($weatherObject->sensorObjectId)) {
+			throw new \Exception("$weatherObject->sensorObjectId doesnt exist");
+		}
 		$insertArray = [
 			"temperature" => $weatherObject->getTemperature(),
 			"humidity" => $weatherObject->getHumidity(),
@@ -28,8 +32,8 @@ class WeatherObjectAdapter {
 		try {
 			$this->database->getDatabase()->insert("weatherdata", $insertArray);
 			return true;
-		} catch (\PDOException $e) {
-			echo $e->getMessage();
+		} catch (\PDOException $exception) {
+			echo $exception->getMessage();
 			return false;
 		}
 		
@@ -63,7 +67,7 @@ class WeatherObjectAdapter {
 		return $objectArray;
 	}
 
-	public function replaceWeatherObject(int $id, Models\WeatherObjectModel $weatherObject) : bool {
+	public function replaceWeatherObject(int $uId, Models\WeatherObjectModel $weatherObject) : bool {
 		$replacementArray = [
 			"temperature" => $weatherObject->getTemperature(),
 			"humidity" => $weatherObject->getHumidity(),
@@ -71,45 +75,61 @@ class WeatherObjectAdapter {
 			"brightness" => $weatherObject->getBrightness(),
 			"sensorObjectId" => $weatherObject->sensorObjectId
 		];
-		return $this->updateWeatherObject($id, $replacementArray);
+		return $this->updateWeatherObject($uId, $replacementArray);
 	}
 
-	public function updateWeatherObject(int $id, array $newValues) : bool {
+	public function updateWeatherObject(int $uId, array $newValues) : bool {
 		$possibleKeys = ["temperature", "humidity", "pressure", "brightness", "sensorObjectId"];
-		foreach (array_keys($newValues) as $key) {
+		foreach ($newValues as $key => $value) {
 			if (!in_array($key, $possibleKeys)) {
 				throw new \Exception("Unknown update variable $key");
 			}
-		}
-		foreach ($newValues as $value) {
 			if (!is_numeric($value)) {
 				throw new \InvalidArgumentException("$value has to be a number");
+			}
+			if ($key == "sensorObjectId") {
+				if (!$this->validateSensorObject($value)) {
+					throw new \Exception("$value doesnt exist");
+				}
 			}
 		}
 		try {
 			$this->database->getDatabase()->update(
 				"weatherdata",
 				$newValues,
-				["id" => $id]
+				["id" => $uId]
 			);
 			return true;
-		} catch (\Exception $e) {
-			var_dump($e);
+		} catch (\Exception $exception) {
+			var_dump($exception);
 			return false;
 		}
 	}
 
-	public function deleteWeatherObject(int $id) : bool {
-		if ($id < 1) {
-			throw new \InvalidArgumentException("Id $id can't be negative!");
+	public function deleteWeatherObject(int $uId) : bool {
+		if ($uId < 1) {
+			throw new \InvalidArgumentException("Id $uId can't be negative!");
 		} 
 		try {
-			$this->database->getDatabase()->delete("weatherdata", ["id" => $id]);
+			$this->database->getDatabase()->delete("weatherdata", ["id" => $uId]);
 			return true;
-		} catch (\PDOException $e) {
-			var_dump($e);
+		} catch (\PDOException $exception) {
+			var_dump($exception);
 			return false;
 		}
+	}
+
+	public function validateSensorObject(int $sensorObjectId) : bool {
+		$sensorAdapter = new SensorDeviceAdapter($this->database);
+		$res = $sensorAdapter->getSensorObjectFromDatabase("*", ["id" => $sensorObjectId]);
+		if (count($res) > 0) {
+			foreach ($res as $entry) {
+				if ($entry->getDeviceId() == $sensorObjectId) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public function objectToWeatherObject($object) : Models\WeatherObjectModel {

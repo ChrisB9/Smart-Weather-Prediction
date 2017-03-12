@@ -9,7 +9,7 @@ class SensorDeviceModel implements Interfaces\ISensorDeviceModel
     private $registerToken;
     private $deviceName;
     private $registerDate;
-    private $configObject;
+    private $configObjectId;
 
     /**
      * @return mixed
@@ -78,16 +78,45 @@ class SensorDeviceModel implements Interfaces\ISensorDeviceModel
     /**
      * @return ConfigurationModel
      */
-    public function getConfigObject() : ConfigurationModel
+    public function getConfigObject() : int
     {
-        return $this->configObject;
+        return $this->configObjectId;
     }
 
     /**
      * @param ConfigurationModel $configObject
      */
-    public function setConfigObject(ConfigurationModel $configObject)
+    public function setConfigObject(int $configObjectId)
     {
-        $this->configObject = $configObject;
+        $this->configObjectId = $configObjectId;
+    }
+
+    public function __construct() {
+        $this->setRegisterDate(new \DateTime);
+    }
+
+    public function __toString() {
+        $ret = (object) [
+            "id" => $this->getDeviceId(),
+            "registerToken" => $this->getRegisterToken(),
+            "name" => $this->getDeviceName(),
+            "date" => $this->getRegisterDate(),
+            "configObject" => $this->getConfigObject()
+        ];
+        return json_encode($ret);
+    }
+
+    public function setDataByJson(string $json)
+    {
+        $jsonObject = json_decode($json);
+        if (isset($jsonObject->id)) {
+            $this->setDeviceId($jsonObject->id);
+        }
+        $this->setDeviceName($jsonObject->name);
+        $this->setRegisterToken($jsonObject->registerToken);
+        $this->setConfigObject($jsonObject->configObject);
+        if (isset($jsonObject->date)) {
+            $this->setRegisterDate(new \DateTime($jsonObject->date));
+        }
     }
 }
