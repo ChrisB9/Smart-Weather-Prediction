@@ -4,7 +4,7 @@ namespace cbenco\Forecaster\Adapter;
 use cbenco\Forecaster\Adapter\SensorDeviceAdapter;
 use cbenco\Database;
 use cbenco\Forecaster\Models;
-use cbenco\Config;
+use cbenco\Config\DatabaseConfig;
 
 class WeatherObjectAdapter {
 	private $database;
@@ -12,7 +12,7 @@ class WeatherObjectAdapter {
 		$this->database = $database;
 		$this->database->createTable(
 			"weatherdata", 
-			Config\DatabaseConfig::getDatabaseTableSchema(
+			(new DatabaseConfig)->getDatabaseTableSchema(
 				"sqlite", "weatherdata")
 		);
 	}

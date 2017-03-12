@@ -19,9 +19,9 @@ class DatabaseTest extends TestCase {
 	protected $sensorAdapter;
 	public function setUp() {
 		$this->sqliteDatabaseConnection = new Database\DatabaseFactory("sqliteTest");
-		$this->sqliteDatabaseConnection->createTable("weatherdata", DatabaseConfig::getDatabaseTableSchema($this->sqliteDatabaseConnection->getDatabaseType(), "weatherdata"));
+		$this->sqliteDatabaseConnection->createTable("weatherdata", (new DatabaseConfig)->getDatabaseTableSchema($this->sqliteDatabaseConnection->getDatabaseType(), "weatherdata"));
 		$this->weatherAdapter = new WeatherObjectAdapter($this->sqliteDatabaseConnection);
-		$this->sqliteDatabaseConnection->createTable("sensorobject", DatabaseConfig::getDatabaseTableSchema($this->sqliteDatabaseConnection->getDatabaseType(), "sensorobject"));
+		$this->sqliteDatabaseConnection->createTable("sensorobject", (new DatabaseConfig)->getDatabaseTableSchema($this->sqliteDatabaseConnection->getDatabaseType(), "sensorobject"));
 		$this->sensorAdapter = new SensorDeviceAdapter($this->sqliteDatabaseConnection);
 	}
 

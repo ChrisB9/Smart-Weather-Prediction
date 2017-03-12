@@ -5,8 +5,8 @@ namespace cbenco\Config;
 
 class DatabaseConfig
 {
-	const databaseSchemaFile = "database.json";
-    const configuredDatabase = [
+	const DATABASESCHEMAFILE = "database.json";
+    const CONFIGUREDDATABASE = [
     	"mysql" => [
 			'database_type' => 'mysql',
 		    'database_name' => '',
@@ -31,12 +31,12 @@ class DatabaseConfig
         ]
     ];
 
-    public static function getDatabaseArray(string $type) {
-    	return self::configuredDatabase[$type];
+    public function getDatabaseArray(string $type) {
+    	return self::CONFIGUREDDATABASE[$type];
     }
 
-    public static function getDatabaseTableSchema(string $type, string $table) {
-    	$schema = json_decode(file_get_contents(self::databaseSchemaFile));
+    public function getDatabaseTableSchema(string $type, string $table) {
+    	$schema = json_decode(file_get_contents(self::DATABASESCHEMAFILE));
     	return $schema->$type->$table;
     }
 }

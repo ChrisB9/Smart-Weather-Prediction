@@ -2,14 +2,14 @@
 
 namespace cbenco\Database;
 use Medoo\Medoo;
-use cbenco\Config;
+use cbenco\Config\DatabaseConfig;
 
 class DatabaseFactory {
 	private $database;
 	private $databaseType;
 	public function __construct(string $databaseType) {
 		$this->databaseType = $databaseType;
-		$this->database = new Medoo(Config\DatabaseConfig::configuredDatabase[$databaseType]);
+		$this->database = new Medoo((new DatabaseConfig)->getDatabaseArray($this->getDatabaseType()));
 	}
 
 	public function getDatabase() {
@@ -21,9 +21,9 @@ class DatabaseFactory {
 	}
 
 	public function deleteDatabase() {
-		switch (Config\DatabaseConfig::getDatabaseArray($this->getDatabaseType())["database_type"]) {
+		switch ((new DatabaseConfig)->getDatabaseArray($this->getDatabaseType())["database_type"]) {
 			case "sqlite":
-				unlink(Config\DatabaseConfig::getDatabaseArray($this->getDatabaseType())["database_file"]);
+				unlink((new DatabaseConfig)->getDatabaseArray($this->getDatabaseType())["database_file"]);
 				break;
 		}
 	}

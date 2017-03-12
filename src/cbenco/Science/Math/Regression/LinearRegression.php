@@ -31,9 +31,9 @@ class LinearRegression implements IRegression {
 		$this->parameterS = [
 			"x" => $this->averageX,
 			"y" => $this->averageY,
-			"xx" => $this->getAverage(array_map(function($x) {return pow($x, 2);}, array_keys($this->dataset))),
-			"xy" => $this->getAverage(array_map(function ($x, $y) {
-				return $this->multiply($x, $y);
+			"xx" => $this->getAverage(array_map(function($xval) {return pow($xval, 2);}, array_keys($this->dataset))),
+			"xy" => $this->getAverage(array_map(function ($xval, $yval) {
+				return $this->multiply($xval, $yval);
 			}, array_keys($this->dataset), $this->dataset))
 		];
 	}
@@ -76,13 +76,13 @@ class LinearRegression implements IRegression {
 		return $this->parameterN;
 	}
 
-	public function getValueOf(float $x) : float
+	public function getValueOf(float $newX) : float
 	{
 	    // y = f(x) = mx+n
 	    return $this->add(
 	    	$this->multiply(
 	    		$this->getParameterM(),
-	    		$x
+	    		$newX
 	    	),
 	    	$this->getParameterN()
 	    );

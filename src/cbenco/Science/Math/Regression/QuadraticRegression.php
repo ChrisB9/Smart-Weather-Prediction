@@ -39,8 +39,8 @@ class QuadraticRegression implements IRegression {
 			$this->multiply(
 				$this->getParameterC(),
 				$this->getAverage(
-					array_map(function ($n) {
-						return pow($n, 2);
+					array_map(function ($num) {
+						return pow($num, 2);
 					}, array_keys($this->dataset))
 				)
 			)
@@ -118,33 +118,33 @@ class QuadraticRegression implements IRegression {
 	}
 
 	private function setCorrelationCoefficient() {
-		$numerator = array_sum(array_map(function ($x, $y) {
+		$numerator = array_sum(array_map(function ($xval, $yval) {
 			return pow($this->subtract(
-				$y,
+				$yval,
 				$this->add(
 					$this->getParameterA(),
 					$this->multiply(
 						$this->getParameterB(),
-						$x
+						$xval
 					),
 					$this->multiply(
 						$this->getParameterB(),
-						pow($x, 2)
+						pow($xval, 2)
 					)
 				)
 			), 2);
 		}, array_keys($this->dataset), $this->dataset));
-		$denumerator = array_sum(array_map(function($y) {
+		$denumerator = array_sum(array_map(function($yval) {
 			return pow($this->subtract(
-				$y, $this->averageY
+				$yval, $this->averageY
 			), 2);
 		}, $this->dataset));
 		$this->correlationCoefficient = sqrt(1 - $this->divide($numerator, $denumerator));
 	}
 
 	private function setParameterS(array $dataset) {
-		$dataSetPow = array_map(function ($n) {
-						return pow($n, 2);
+		$dataSetPow = array_map(function ($num) {
+						return pow($num, 2);
 					}, array_keys($this->dataset));
 		$this->parameterS = [
 			"xx" => $this->getParameterS(array_combine(array_keys($this->dataset), array_keys($this->dataset))),
@@ -167,15 +167,15 @@ class QuadraticRegression implements IRegression {
 		return (array_sum($tmp) / count($dataset)) - $minuend;
 	}
 
-	public function getValueOf(float $x) : float {
+	public function getValueOf(float $newX) : float {
 		return $this->add(
 			$this->getParameterA(),
 			$this->multiply(
-				$this->getParameterB(), $x
+				$this->getParameterB(), $newX
 			),
 			$this->multiply(
 				$this->getParameterC(),
-				pow($x, 2)
+				pow($newX, 2)
 			)
 		);
 	}

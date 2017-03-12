@@ -15,7 +15,7 @@ class SensorDeviceAdapter {
 		$this->database = $database;
 		$this->database->createTable(
 			self::DB_TABLE_NAME,
-			DatabaseConfig::getDatabaseTableSchema(self::DB_TYPE, self::DB_TABLE_NAME)
+			(new DatabaseConfig)->getDatabaseTableSchema(self::DB_TYPE, self::DB_TABLE_NAME)
 		);
 	}
 
