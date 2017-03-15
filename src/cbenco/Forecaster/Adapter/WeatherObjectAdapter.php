@@ -39,6 +39,28 @@ class WeatherObjectAdapter {
 		
 	}
 
+	public function addWeatherObjectByTokenToDatabase(string $token, Models\WeatherObjectModel $weatherObject) : bool {
+		$sensorToken = $this->getSensorIdByToken($token);
+		if ($token == 0) throw new \Exception("$token doesnt exist");
+		$insertArray = [
+			"temperature" => $weatherObject->getTemperature(),
+			"humidity" => $weatherObject->getHumidity(),
+			"pressure" => $weatherObject->getPressure(),
+			"brightness" => $weatherObject->getBrightness(),
+			"sensorObjectId" => $sensorToken,
+			"date" => $weatherObject->creationDate->format('Y-m-d H:i:s'),
+			"deleted" => 0
+		];
+		try {
+			$this->database->getDatabase()->insert("weatherdata", $insertArray);
+			return true;
+		} catch (\PDOException $exception) {
+			echo $exception->getMessage();
+			return false;
+		}
+		
+	}
+
 	public function getWeatherObjectFromDatabase(...$arguments) : array {
 		$objectArray = [];
 		$result = [];
@@ -130,6 +152,15 @@ class WeatherObjectAdapter {
 			}
 		}
 		return false;
+	}
+
+	public function getSensorIdByToken(string $token) : int {
+		$sensorAdapter = new SensorDeviceAdapter($this->database);
+		$res = $sensorAdapter->getSensorObjectFromDatabase("*", ["registerToken" => $token]);
+		if (count($res) > 0) {
+			return $res[0]->getDeviceId();
+		}
+		return 0;
 	}
 
 	public function objectToWeatherObject($object) : Models\WeatherObjectModel {

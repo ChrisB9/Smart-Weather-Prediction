@@ -17,6 +17,7 @@ class WeatherObjectRoutes {
 	public function getWeatherRoutes(Klein $klein) {
 		$klein->respond('GET', '/weather', [$this, 'listWeatherObjects']);
         $klein->respond('POST', '/weather', [$this, 'addNewWeatherObject']);
+        $klein->respond('GET', '/weather/token/[:token]', [$this, 'addNewWeatherObjectByToken']);
         $klein->respond('GET', '/weather/[:id]', [$this, 'getWeatherObject']);
         $klein->respond('DELETE', '/weather/[:id]', [$this, 'deleteWeatherObject']);
         $klein->respond('PUT', '/weather/[:id]', [$this, 'replaceWeatherObject']);
@@ -49,6 +50,25 @@ class WeatherObjectRoutes {
         	)) {
         	$response->json(true);
         	return;
+        }
+        $response->json(false);
+    }
+
+    public function addNewWeatherObjectByToken(Request $request, Response $response) {
+        $data = json_decode("{".$request->data."}");
+        $array = [
+            "temperature" => $data->data->environment[2],
+            "pressure" => $data->data->environment[1],
+            "humidity" => $data->data->environment[0],
+            "brightness" => $data->data->light,
+            "sensorObjectId" => 1
+        ]; 
+        if ($this->weatherObjectAdapter->addWeatherObjectByTokenToDatabase(
+                $request->token,
+                $this->weatherObjectAdapter->objectToWeatherObject($request->data)
+            )) {
+            $response->json(true);
+            return;
         }
         $response->json(false);
     }
