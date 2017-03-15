@@ -4,6 +4,7 @@ namespace cbenco\Routes;
 
 class RoutesHelper
 {
+	// TODO: input & $_SERVER als parameter
 	public static function getHttpFormData() {
 		$put_data = (object)[];
 		$input = file_get_contents('php://input');

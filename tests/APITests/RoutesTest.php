@@ -32,7 +32,6 @@ class RoutesTest extends TestCase {
         $this->sensorObjectAdapter = new Adapter\SensorDeviceAdapter($this->sqliteDatabaseConnection);
         $this->klein_app = (new WOR($this->weatherObjectAdapter))->getWeatherRoutes($this->klein_app);
         $this->klein_app = (new SDR($this->sensorObjectAdapter))->getSensorRoutes($this->klein_app);
-        $_SERVER["CONTENT_TYPE"] = 'application/x-www-form-urlencoded';
 	}
 
 	protected function dispatchAndReturnOutput($request = null, $response = null)

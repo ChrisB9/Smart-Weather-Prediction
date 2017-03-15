@@ -30,11 +30,7 @@ class DatabaseFactory {
 
 	public function createTable(string $tableName, array $schema) {
 		$sql = "CREATE TABLE IF NOT EXISTS $tableName (";
-		for ($i = 0; $i < count($schema); $i++) {
-			$sql .= $schema[$i];
-			if ($i < (count($schema)-1))
-				$sql .= ",";
-		}
+		$sql.= implode(",", $schema);
 		try {
 			$this->database->query($sql.")");
 		} catch (\PDOException $e) {

@@ -20,6 +20,7 @@ class SensorDeviceRoutes {
         $klein->respond('GET', '/devices', [$this, 'listDevices']);
         $klein->respond('POST', '/device', [$this, 'addNewDevice']);
         $klein->respond('GET', '/device/[:id]', [$this, 'getDeviceObject']);
+        $klein->respond('GET', '/device/token/[:token]', [$this, 'getDeviceObjectByToken']);
         $klein->respond('DELETE', '/device/[:id]', [$this, 'deleteDevice']);
         $klein->respond('PATCH', '/device/[:id]', [$this, 'updateDeviceObject']);
 		return $klein;
@@ -49,6 +50,18 @@ class SensorDeviceRoutes {
 	        return;
     	}
     	$response->json(false);
+    }
+
+    public function getDeviceObjectByToken(Request $request, Response $response) {
+        $sObject = $this->sensorDeviceAdapter->getSensorObjectFromDatabase(
+                "*",
+                ["registerToken" => $request->token]
+            );
+        if (count($sObject) > 0) {
+            $response->json( json_decode((string) $sObject[0]));
+            return;
+        }
+        $response->json(false);
     }
 
     public function addNewDevice(Request $request, Response $response) {

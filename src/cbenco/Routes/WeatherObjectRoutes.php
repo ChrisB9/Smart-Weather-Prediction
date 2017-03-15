@@ -26,7 +26,8 @@ class WeatherObjectRoutes {
 
 	public function listWeatherObjects(Request $request, Response $response) {
         $response->json(
-            array_map(function($n){return (string) $n;}, $this->weatherObjectAdapter->getWeatherObjectFromDatabase())
+            array_map(function($n){return (string) $n;}, $this->weatherObjectAdapter->getWeatherObjectFromDatabase()),
+            $request->callback
         );
     }
 
@@ -36,10 +37,10 @@ class WeatherObjectRoutes {
         		["id" => $request->id]
         	);
     	if (count($wObject) > 0) {
-	        $response->json( json_decode((string) $wObject[0]));
+	        $response->json( json_decode((string) $wObject[0]), $request->callback);
 	        return;
     	}
-    	$response->json(false);
+    	$response->json(false, $request->callback);
     }
 
     public function addNewWeatherObject(Request $request, Response $response) {
