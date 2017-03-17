@@ -17,7 +17,8 @@ class WeatherObjectRoutes {
 	public function getWeatherRoutes(Klein $klein) {
 		$klein->respond('GET', '/weather', [$this, 'listWeatherObjects']);
         $klein->respond('POST', '/weather', [$this, 'addNewWeatherObject']);
-        $klein->respond('GET', '/weather/token/[:token]', [$this, 'addNewWeatherObjectByToken']);
+        //$klein->respond('GET', '/weather/token/[:token]', [$this, 'addNewWeatherObjectByToken']);
+        $klein->respond('POST', '/weather/token/[:token]', [$this, 'addNewWeatherObjectByToken']);
         $klein->respond('GET', '/weather/[:id]', [$this, 'getWeatherObject']);
         $klein->respond('DELETE', '/weather/[:id]', [$this, 'deleteWeatherObject']);
         $klein->respond('PUT', '/weather/[:id]', [$this, 'replaceWeatherObject']);
