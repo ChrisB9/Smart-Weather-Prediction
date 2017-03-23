@@ -2,8 +2,6 @@
 .phpintel/
 vendor/
 build/*
-data/*.db
 
 build/
 
-*.db
