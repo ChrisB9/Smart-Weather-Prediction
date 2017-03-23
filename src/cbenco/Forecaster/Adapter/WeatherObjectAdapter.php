@@ -2,20 +2,27 @@
 
 namespace cbenco\Forecaster\Adapter;
 use cbenco\Forecaster\Adapter\SensorDeviceAdapter;
-use cbenco\Database;
+use cbenco\Config\BaseConfig;
+use cbenco\Database\DatabaseFactory;
 use cbenco\Forecaster\Models;
 use cbenco\Config\DatabaseConfig;
 
 class WeatherObjectAdapter {
+
 	private $database;
-	public function __construct(Database\DatabaseFactory $database) {
-		$this->database = $database;
+	private $tableName;
+	public function __construct(string $adapter = "weatherobjectadapter") {
+		$this->database = new DatabaseFactory((new BaseConfig)->getDatabaseDriver($adapter));
+		$this->tableName = (new BaseConfig)->getAdapterDBTable($adapter);
 		$this->database->createTable(
-			"weatherdata", 
+			$this->tableName,
 			(new DatabaseConfig)->getDatabaseTableSchema(
-				"sqlite", "weatherdata")
+				(new BaseConfig)->getDatabaseDriver($adapter),
+				$this->tableName
+			)
 		);
 	}
+
 	public function addWeatherObjectToDatabase(Models\WeatherObjectModel $weatherObject) : bool {
 		if (!$this->validateSensorObject($weatherObject->sensorObjectId)) {
 			throw new \Exception("$weatherObject->sensorObjectId doesnt exist");
@@ -30,7 +37,7 @@ class WeatherObjectAdapter {
 			"deleted" => 0
 		];
 		try {
-			$this->database->getDatabase()->insert("weatherdata", $insertArray);
+			$this->database->insert($this->tableName, $insertArray);
 			return true;
 		} catch (\PDOException $exception) {
 			echo $exception->getMessage();
@@ -41,7 +48,7 @@ class WeatherObjectAdapter {
 
 	public function addWeatherObjectByTokenToDatabase(string $token, Models\WeatherObjectModel $weatherObject) : bool {
 		$sensorToken = $this->getSensorIdByToken($token);
-		if ($token == 0) throw new \Exception("$token doesnt exist");
+		if ($sensorToken == 0) throw new \Exception("$token doesn't exist");
 		$insertArray = [
 			"temperature" => $weatherObject->getTemperature(),
 			"humidity" => $weatherObject->getHumidity(),
@@ -52,7 +59,7 @@ class WeatherObjectAdapter {
 			"deleted" => 0
 		];
 		try {
-			$this->database->getDatabase()->insert("weatherdata", $insertArray);
+			$this->database->insert($this->tableName, $insertArray);
 			return true;
 		} catch (\PDOException $exception) {
 			echo $exception->getMessage();
@@ -64,26 +71,16 @@ class WeatherObjectAdapter {
 	public function getWeatherObjectFromDatabase(...$arguments) : array {
 		$objectArray = [];
 		$result = [];
-		if (isset($arguments)) {
-			switch (count($arguments)) {
-				case 1:
-					$result = $this->database->getDatabase()->select("weatherdata", $arguments[0]);
-					break;
-				case 2:
-					if (!is_array($arguments[0])) {
-						$result = $this->database->getDatabase()->select("weatherdata", "*", $arguments[1]);
-					} else {
-						$result = $this->database->getDatabase()->select("weatherdata", $arguments[0], $arguments[1]);
-					}
-					break;
-				default:
-					$result = $this->database->getDatabase()->select("weatherdata", "*");
-					break;
-			}
-		} else {
-			$result = $this->database->getDatabase()->select("weatherdata", "*");
+	    switch (count($arguments)) {
+			case 1:
+				$result = $this->database->select($this->tableName, "*", $arguments[0]);
+				break;
+			default:
+				$result = $this->database->select($this->tableName, "*");
+				break;
 		}
 		foreach ($result as $entry) {
+			if (count($entry) == 0) continue;
 			$objectArray[] = $this->objectToWeatherObject(json_encode($entry));
 		}
 		return $objectArray;
@@ -116,8 +113,8 @@ class WeatherObjectAdapter {
 			}
 		}
 		try {
-			$this->database->getDatabase()->update(
-				"weatherdata",
+			$this->database->update(
+				$this->tableName,
 				$newValues,
 				["id" => $uId]
 			);
@@ -133,7 +130,7 @@ class WeatherObjectAdapter {
 			throw new \InvalidArgumentException("Id $uId can't be negative!");
 		} 
 		try {
-			$this->database->getDatabase()->delete("weatherdata", ["id" => $uId]);
+			$this->database->delete($this->tableName, ["id" => $uId]);
 			return true;
 		} catch (\PDOException $exception) {
 			var_dump($exception);
@@ -142,7 +139,7 @@ class WeatherObjectAdapter {
 	}
 
 	public function validateSensorObject(int $sensorObjectId) : bool {
-		$sensorAdapter = new SensorDeviceAdapter($this->database);
+		$sensorAdapter = new SensorDeviceAdapter();
 		$res = $sensorAdapter->getSensorObjectFromDatabase("*", ["id" => $sensorObjectId]);
 		if (count($res) > 0) {
 			foreach ($res as $entry) {
@@ -155,7 +152,7 @@ class WeatherObjectAdapter {
 	}
 
 	public function getSensorIdByToken(string $token) : int {
-		$sensorAdapter = new SensorDeviceAdapter($this->database);
+		$sensorAdapter = new SensorDeviceAdapter();
 		$res = $sensorAdapter->getSensorObjectFromDatabase("*", ["registerToken" => $token]);
 		if (count($res) > 0) {
 			return $res[0]->getDeviceId();

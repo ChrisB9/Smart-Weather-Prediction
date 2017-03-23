@@ -1,0 +1,23 @@
+{
+	"settings": {
+		"database": {
+			"weatherobjectadapter": {
+				"driver": "rethinkdb",
+				"tablename": "weatherdata"
+			},
+			"sensordeviceadapter": {
+				"driver": "sqlite",
+				"tablename": "sensorobject"
+			},
+			"weatherobjectadapterTest": {
+				"driver": "rethinkdbTest",
+				"tablename": "weatherdata"
+			},
+			"sensordeviceadapterTest": {
+				"driver": "sqliteTest",
+				"tablename": "sensorobject"
+			}
+		},
+		"baseurl": "/swp2/"
+	}
+}

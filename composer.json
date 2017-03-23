@@ -5,7 +5,8 @@
     "require": {
         "klein/klein": "^2.1",
         "catfan/medoo": "^1.2",
-        "php": ">=7.0"
+        "php": ">=7.0",
+        "danielmewes/php-rql": "^2.3"
     },
     "autoload": {
         "psr-4": {
@@ -24,6 +25,6 @@
         "phpunit/phpunit": "^6.0"
     },
     "scripts": {
-        "test": "phpunit -c tests/phpunit.xml"
+        "test": "phpunit --colors=always -c tests/phpunit.xml"
     }
 }

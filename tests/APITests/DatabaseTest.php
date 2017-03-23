@@ -2,7 +2,7 @@
 
 namespace cbenco\Tests\APITests;
 
-use cbenco\Database;
+use cbenco\Database\DatabaseFactory;
 use cbenco\Config\DatabaseConfig;
 use cbenco\Forecaster\Adapter;
 use cbenco\Forecaster\Adapter\WeatherObjectAdapter;
@@ -15,14 +15,12 @@ use PHPUnit\Framework\TestCase;
 class DatabaseTest extends TestCase {
 
 	protected $sqliteDatabaseConnection;
+	protected $rethinkConnection;
 	protected $weatherAdapter;
 	protected $sensorAdapter;
 	public function setUp() {
-		$this->sqliteDatabaseConnection = new Database\DatabaseFactory("sqliteTest");
-		$this->sqliteDatabaseConnection->createTable("weatherdata", (new DatabaseConfig)->getDatabaseTableSchema($this->sqliteDatabaseConnection->getDatabaseType(), "weatherdata"));
-		$this->weatherAdapter = new WeatherObjectAdapter($this->sqliteDatabaseConnection);
-		$this->sqliteDatabaseConnection->createTable("sensorobject", (new DatabaseConfig)->getDatabaseTableSchema($this->sqliteDatabaseConnection->getDatabaseType(), "sensorobject"));
-		$this->sensorAdapter = new SensorDeviceAdapter($this->sqliteDatabaseConnection);
+		$this->weatherAdapter = new WeatherObjectAdapter("weatherobjectadapterTest");
+		$this->sensorAdapter = new SensorDeviceAdapter("sensordeviceadapterTest");
 	}
 
 	public function getWeatherObjectModel(): WeatherObjectModel {
@@ -55,7 +53,7 @@ class DatabaseTest extends TestCase {
 		$getResult = $this->weatherAdapter->getWeatherObjectFromDatabase();
 		foreach ($getResult as $result) {
 			$this->assertObjectHasAttribute("temperature", $result);
-			$this->assertNotEmpty($this->weatherAdapter->getWeatherObjectFromDatabase("*", ["id" => $result->getUId()]));
+			$this->assertNotEmpty($this->weatherAdapter->getWeatherObjectFromDatabase(["id" => $result->getUId()]));
 		}
 		$tmp = array_map(function($n){return (string) $n;}, $getResult);
 		foreach ($tmp as $result) {
@@ -135,6 +133,20 @@ class DatabaseTest extends TestCase {
 	public function testReplaceQueryWithSensorObjectWithCorrectData() {
 		foreach ($this->sensorAdapter->getSensorObjectFromDatabase() as $result) {
 			$this->assertTrue($this->sensorAdapter->replaceSensorObject($result->getDeviceId(), $this->getSensorObjectModel()));
+		}
+	}
+
+	/**
+	 * @depends testInsertQueryWithWeatherObjectWithCorrectData
+	 * @depends testSelectQueryWithSensorObjectWithCorrectData
+	 */ 
+	public function testToGetSensorIdBySensorToken() {
+		$getResult = $this->sensorAdapter->getSensorObjectFromDatabase();
+		foreach ($getResult as $result) {
+			$sensorId = $this->weatherAdapter->getSensorIdByToken(
+				$result->getRegisterToken()
+			);
+			$this->assertEquals($result->getDeviceId(), $sensorId);
 		}
 	}
 

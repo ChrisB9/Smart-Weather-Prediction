@@ -78,8 +78,8 @@ class SensorDeviceRoutes {
         $possibleKeys = ["registerToken", "name", "date", "configObject"];
     	$updateArray = [];
     	foreach ($possibleKeys as $key) {
-    		if (isset(RoutesHelper::getHttpFormData()->{$key})) {
-    			$updateArray[$key] = RoutesHelper::getHttpFormData()->{$key};
+    		if (isset((new RoutesHelper)->getHttpFormData()->{$key})) {
+    			$updateArray[$key] = (new RoutesHelper)->getHttpFormData()->{$key};
     		}
     	}
         if ($this->sensorDeviceAdapter->updateSensorObject($request->id, $updateArray)) {

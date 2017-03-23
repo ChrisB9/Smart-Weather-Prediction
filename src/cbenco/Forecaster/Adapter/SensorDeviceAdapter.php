@@ -5,17 +5,21 @@ namespace cbenco\Forecaster\Adapter;
 
 use cbenco\Database\DatabaseFactory;
 use cbenco\Config\DatabaseConfig;
+use cbenco\Config\BaseConfig;
 use cbenco\Forecaster\Models\SensorDeviceModel;
 
 class SensorDeviceAdapter {
 	private $database;
-	const DB_TABLE_NAME = "sensorobject";
-	const DB_TYPE = "sqlite";
-	public function __construct(DatabaseFactory $database) {
-		$this->database = $database;
+	private $tableName;
+	public function __construct(string $adapter = "sensordeviceadapter") {
+		$this->database = new DatabaseFactory((new BaseConfig)->getDatabaseDriver($adapter));
+		$this->tableName = (new BaseConfig)->getAdapterDBTable($adapter);
 		$this->database->createTable(
-			self::DB_TABLE_NAME,
-			(new DatabaseConfig)->getDatabaseTableSchema(self::DB_TYPE, self::DB_TABLE_NAME)
+			$this->tableName,
+			(new DatabaseConfig)->getDatabaseTableSchema(
+				(new BaseConfig)->getDatabaseDriver($adapter),
+				$this->tableName
+			)
 		);
 	}
 
@@ -29,7 +33,7 @@ class SensorDeviceAdapter {
 		];
 		try {
 			$this->database->getDatabase()->insert(
-				self::DB_TABLE_NAME,
+				$this->tableName,
 				$insertArray
 			);
 			return true;
@@ -43,13 +47,10 @@ class SensorDeviceAdapter {
 		$objectArray = [];
 		$result = [];
 		switch (count($arguments)) {
-			case 1:
-				$result = $this->database->getDatabase()->select(self::DB_TABLE_NAME, $arguments[0]);
-				break;
 			case 2:
-				$result = $this->database->getDatabase()->select(self::DB_TABLE_NAME, "*", $arguments[1]);
+				$result = $this->database->getDatabase()->select($this->tableName, "*", $arguments[1]);
 			default:
-				$result = $this->database->getDatabase()->select(self::DB_TABLE_NAME, "*");
+				$result = $this->database->getDatabase()->select($this->tableName, "*");
 		}
 		$objectArray = array_map(function ($entry) {
 			return $this->objectToSensorObject(
@@ -79,7 +80,7 @@ class SensorDeviceAdapter {
 		if ($uId < 1) throw new \Exception("Id $uId can't be negative");
 		try {
 			$this->database->getDatabase()->update(
-				self::DB_TABLE_NAME,
+				$this->tableName,
 				$newValues,
 				["id" => $uId]
 			);
@@ -94,7 +95,7 @@ class SensorDeviceAdapter {
 		if ($uId < 1) throw new \InvalidArgumentException("Id $uId can't be negative");
 		try {
 			$this->database->getDatabase()->delete(
-				self::DB_TABLE_NAME,
+				$this->tableName,
 				["id" => $uId]
 			);
 			return true;
@@ -105,7 +106,7 @@ class SensorDeviceAdapter {
 	}
 
 	public function getLastInsertedId() : int {
-		return $this->database->getDatabase()->id();
+		return $this->database->getLastId();
 	}
 
 	public function objectToSensorObject($object) : SensorDeviceModel {

@@ -28,6 +28,16 @@ class DatabaseConfig
             'option' => [
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
             ]
+        ],
+        "rethinkdb" => [
+            'database_type' => 'rethinkdb',
+            'database_name' => 'smartWeatherPrediction',
+            'database_host' => 'localhost'
+        ],
+        "rethinkdbTest" => [
+            'database_type' => 'rethinkdb',
+            'database_name' => 'smartWeatherPredictionTest',
+            'database_host' => 'localhost'
         ]
     ];
 
@@ -37,6 +47,6 @@ class DatabaseConfig
 
     public function getDatabaseTableSchema(string $type, string $table) {
     	$schema = json_decode(file_get_contents(self::DATABASESCHEMAFILE));
-    	return $schema->$type->$table;
+    	return $schema->{$type}->{$table};
     }
 }

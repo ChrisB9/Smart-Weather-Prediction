@@ -2,17 +2,21 @@
 
 namespace cbenco\Tests\APITests;
 
-//use cbenco\Tests\APITests\;
 use Klein\Klein;
 use Klein\Request;
 use Klein\Response;
 use cbenco\Routes\Router;
+use cbenco\Config\BaseConfig;
 use cbenco\Routes\WeatherObjectRoutes as WOR;
 use cbenco\Routes\SensorDeviceRoutes as SDR;
+use cbenco\Forecaster\Adapter\WeatherObjectAdapter;
+use cbenco\Forecaster\Adapter\SensorDeviceAdapter;
 use cbenco\Forecaster\Models\WeatherObjectModel;
 use cbenco\Forecaster\Models\SensorDeviceModel;
-use cbenco\Database;
+use cbenco\Database\DatabaseFactory;
 use cbenco\Forecaster\Adapter;
+use cbenco\Tests\APITests\Mocks\MockRequestFactory;
+use cbenco\Tests\APITests\Mocks\MockRoutesHelper;
 use PHPUnit\Framework\TestCase;
 
 class RoutesTest extends TestCase {
@@ -20,16 +24,16 @@ class RoutesTest extends TestCase {
 	protected $klein_app;
 	protected $router;
 	protected $sqliteDatabaseConnection;
+    protected $rethinkConnection;
 	protected $weatherObjectAdapter;
     protected $sensorObjectAdapter;
 
 	public function setUp() {
-		$this->router = new Router("/swp2/");
+		$this->router = new Router((new BaseConfig)->getBaseUrl());
 		$this->klein_app = $this->router->getRouter();
 		$this->klein_app->service()->bind(new Request(), new Response());
-		$this->sqliteDatabaseConnection = new Database\DatabaseFactory("sqliteTest");
-        $this->weatherObjectAdapter = new Adapter\WeatherObjectAdapter($this->sqliteDatabaseConnection);
-        $this->sensorObjectAdapter = new Adapter\SensorDeviceAdapter($this->sqliteDatabaseConnection);
+        $this->weatherObjectAdapter = new WeatherObjectAdapter("weatherobjectadapterTest");
+        $this->sensorObjectAdapter = new SensorDeviceAdapter("sensordeviceadapterTest");
         $this->klein_app = (new WOR($this->weatherObjectAdapter))->getWeatherRoutes($this->klein_app);
         $this->klein_app = (new SDR($this->sensorObjectAdapter))->getSensorRoutes($this->klein_app);
 	}
@@ -62,38 +66,104 @@ class RoutesTest extends TestCase {
         return $sdm;
     }
 
-    /**
-     * 
-     */
-	public function testWeatherRoutes() {
+    public function getWeatherObjectFromDatabase() {
         $this->sensorObjectAdapter->addSensorObjectToDatabase($this->getSensorObjectModel());
         $wObj = $this->getWeatherObjectModel();
         $wObj->sensorObjectId = $this->sensorObjectAdapter->getLastInsertedId();
         $this->weatherObjectAdapter->addWeatherObjectToDatabase($wObj);
-		$dbselect = $this->weatherObjectAdapter->getWeatherObjectFromDatabase();
-		$wObject = null;
-		if (count($dbselect) > 0) {
-			$wObject = $dbselect[0];
-		}
-		$arrayOfDatabaseResultsForWeatherRoutes = [
-			[
-				"route" => ["/"],
-				"result" => "Welcome!"
-			],
-    		[
-    			"route" => ["/weather"], 
-    			"result" => json_encode(array_map(function($n) {return (string) $n;}, $dbselect))
-    		],
-    		[
-    			"route" => ["/weather", "POST", [
-    				"json" => '{"temperature": 32.30,"humidity": 20.1,"pressure": 1004,"brightness": 90,"sensorObjectId":1}'
-    			]], 
-    			"result" => json_encode(true) 
-    		],
-    		[
-    			"route" => ["/weather/-1"], 
-    			"result" => json_encode(false)
-    		]/*, --> TODO: Add test for PATCH & PUT ,
+        $dbselect = $this->weatherObjectAdapter->getWeatherObjectFromDatabase();
+        $wObject = null;
+        if (count($dbselect) > 0) {
+            $wObject = $dbselect[0];
+        }
+        return [$wObject, $dbselect];
+    }
+
+    /**
+     * 
+     */
+    public function testGetWeatherObjectById() {
+        $wObject = $this->getWeatherObjectFromDatabase()[0];
+        $route = "/weather/".($wObject != null ? $wObject->getUId() : "-1");
+        $objectRoute = $this->dispatchAndReturnOutput(
+            MockRequestFactory::create($route)
+        );
+        $this->assertSame(
+            ($wObject != null ? (string) $wObject : json_encode(false)),
+            $objectRoute
+        );
+    }
+
+    public function testDeleteWeatherObjectById() {
+        $wObject = $this->getWeatherObjectFromDatabase()[0];
+        $route = ["/weather/".($wObject != null ? $wObject->getUId() : "-1"), "DELETE"];
+        $objectRoute = $this->dispatchAndReturnOutput(
+            MockRequestFactory::create(...$route)
+        );
+        $this->assertSame(json_encode(true), $objectRoute);
+    }
+
+    public function testBaseRoute() {
+        $objectRoute = $this->dispatchAndReturnOutput(
+            MockRequestFactory::create("/")
+        );
+        $this->assertSame("Welcome!", $objectRoute);
+    }
+
+    public function testGetAllWeatherDataRoute() {
+        $select = $this->getWeatherObjectFromDatabase()[1];
+        $result = json_encode(array_map(function($n) {return (string) $n;}, $select));
+        $objectRoute = $this->dispatchAndReturnOutput(
+            MockRequestFactory::create("/weather")
+        );
+        $this->assertSame($result, $objectRoute);
+    }
+
+    public function testPostWeatherDataRoute() {
+        $route = [
+            "/weather",
+            "POST", [
+                "json" => 
+                '{"temperature": 32.30,"humidity": 20.1,"pressure": 1004,"brightness": 90,"sensorObjectId":1}'
+            ]
+        ];
+        $objectRoute = $this->dispatchAndReturnOutput(
+            MockRequestFactory::create(...$route)
+        );
+        $this->assertSame(json_encode(true), $objectRoute);
+    }
+
+    public function testGetWeatherObjectByNegativeId() {
+        $objectRoute = $this->dispatchAndReturnOutput(
+            MockRequestFactory::create("/weather/-1")
+        );
+        $this->assertSame(json_encode(false), $objectRoute);
+    }
+
+    public function testGetWeatherObjectByHighId() {
+        $objectRoute = $this->dispatchAndReturnOutput(
+            MockRequestFactory::create("/weather/100000")
+        );
+        $this->assertSame(json_encode(false), $objectRoute);
+    }
+
+    public function testPostWeatherDataByTokenRoute() {
+        $route = [
+            "/weather/token/123456",
+            "POST", [
+                "data" => 
+                '"data":{"light":429120.000000,"environment":[18,99979.000000,32170.000000]}'
+            ]
+        ];
+        $objectRoute = $this->dispatchAndReturnOutput(
+            MockRequestFactory::create(...$route)
+        );
+        $this->assertSame(json_encode(true), $objectRoute);
+    }
+
+    // --> TODO: Add test for PATCH & PUT
+	/*
+		$putAndPatchRoutes = [
     		[
     			"route" => ["/weather/".($wObject != null ? $wObject->getUId() : "-1"), "PUT", [
     				"json" => '{"temperature": 33,"humidity": 20.1,"pressure": 994.4,"brightness": 90,"sensorObjectId": 1}'
@@ -105,37 +175,9 @@ class RoutesTest extends TestCase {
     				"temperature" => 10
     			]],
     			"result" => json_encode(true)
-    		]*/,
-    		[
-    			"route" => ["/weather/".($wObject != null ? $wObject->getUId() : "-1")], 
-    			"result" => ($wObject != null ? (string) $wObject : json_encode(false)) 
-    		],
-    		[
-    			"route" => ["/weather/".($wObject != null ? $wObject->getUId() : "-1"), "DELETE"], 
-    			"result" => json_encode(true) 
     		]
     	];
-    	foreach ($arrayOfDatabaseResultsForWeatherRoutes as $routeDataset) {
-    		$objectRoute = json_encode(
-    			$this->removeDate(
-    				json_decode(
-    					$this->dispatchAndReturnOutput(
-    						Mocks\MockRequestFactory::create(...$routeDataset["route"])
-    					)
-    				)
-    			)
-    		);
-    		$objectResult = json_encode(
-    			$this->removeDate(
-    				json_decode($routeDataset["result"])
-    			)
-    		);
-    		$this->assertSame(
-	            $objectResult,
-	            $objectRoute
-	        );
-    	}
-	}
+	*/
     public function testSensorRoutes() {
         $this->sensorObjectAdapter->addSensorObjectToDatabase($this->getSensorObjectModel());
         $dbselect = $this->sensorObjectAdapter->getSensorObjectFromDatabase();
@@ -169,7 +211,7 @@ class RoutesTest extends TestCase {
                 $this->removeDate(
                     json_decode(
                         $this->dispatchAndReturnOutput(
-                            Mocks\MockRequestFactory::create(...$routeDataset["route"])
+                            MockRequestFactory::create(...$routeDataset["route"])
                         )
                     )
                 )
@@ -185,6 +227,7 @@ class RoutesTest extends TestCase {
             );
         }
     }
+
 	private function removeDate($object) {
 		unset($object->date);
 		return $object;

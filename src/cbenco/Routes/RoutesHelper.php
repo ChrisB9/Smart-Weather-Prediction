@@ -4,22 +4,43 @@ namespace cbenco\Routes;
 
 class RoutesHelper
 {
-	// TODO: input & $_SERVER als parameter
-	public static function getHttpFormData() {
-		$put_data = (object)[];
-		$input = file_get_contents('php://input');
-		preg_match('/boundary=(.*)$/', $_SERVER['CONTENT_TYPE'], $matches);
-		if (false !== strpos($input, "WebKitFormBoundary")) {
-			$input = self::parseFormData($input);
+	protected $phpInput;
+	protected $contentType;
+	public function __construct() {
+		$this->phpInput = $this->getPHPInput();
+		$this->contentType = $this->getServerContentType();
+	}
+
+	public function getPHPInput() {
+		return file_get_contents('php://input');
+	}
+
+	public function getServerContentType() {
+		return $_SERVER['CONTENT_TYPE'];
+	}
+
+	public function setPHPInput(string $phpInput) {
+		$this->phpInput = $phpInput;
+	}
+
+	public function setServerContentType(string $contentType) {
+		$this->contentType = $contentType;
+	}
+
+	public function getHttpFormData() {
+		$putData = (object)[];
+		preg_match('/boundary=(.*)$/', $this->contentType, $matches);
+		if (false !== strpos($this->phpInput, "WebKitFormBoundary")) {
+			$this->phpInput = $this->parseFormData($this->phpInput);
 		}
 		if ($matches) {
 			$boundary = $matches[1];
-			$a_blocks = preg_split("/-+$boundary/", $input);
-			array_pop($a_blocks);
+			$aBlocks = preg_split("/-+$boundary/", $this->phpInput);
+			array_pop($aBlocks);
 		} else {
-			parse_str($input, $a_blocks);
+			parse_str($this->phpInput, $aBlocks);
 		}
-		foreach ($a_blocks as $id => $block) {
+		foreach ($aBlocks as $id => $block) {
 			if (empty($block)) continue;
 			if (strpos($block, 'application/octet-stream') !== FALSE) {
 				preg_match("/name=\"([^\"]*)\".*stream[\n|\r]+([^\n\r].*)?$/s", $block, $matches);
@@ -28,12 +49,12 @@ class RoutesHelper
 				preg_match('/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s', $block, $matches);
 			}
 			if ($matches) {
-			    $put_data->{$matches[1]} = $matches[2];
+			    $putData->{$matches[1]} = $matches[2];
 			} else {
-			    $put_data->{$id} = $block;
+			    $putData->{$id} = $block;
 			}
 		}
-		return $put_data;
+		return $putData;
 	}
 
 	private static function parseFormData(string $input): string {

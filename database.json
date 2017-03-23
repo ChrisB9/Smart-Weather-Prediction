@@ -46,5 +46,11 @@
 			"id INTEGER PRIMARY KEY",
 			"configjson TEXT"
 		]
+	},
+	"rethinkdb": {
+		"weatherdata": []
+	},
+	"rethinkdbTest": {
+		"weatherdata": []
 	}
 }

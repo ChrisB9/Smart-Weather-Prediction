@@ -9,6 +9,7 @@ use cbenco\Routes\RoutesHelper;
 
 class WeatherObjectRoutes {
 	private $weatherObjectAdapter;
+    private $routeHelper;
 
 	public function __construct(Adapter\WeatherObjectAdapter $weatherObjectAdapter) {
 		$this->weatherObjectAdapter = $weatherObjectAdapter;
@@ -34,8 +35,11 @@ class WeatherObjectRoutes {
     }
 
     public function getWeatherObject(Request $request, Response $response) {
+        if ((int) $request->id < 1) {
+            $response->json(false, $request->callback);
+            return;
+        }
     	$wObject = $this->weatherObjectAdapter->getWeatherObjectFromDatabase(
-        		"*",
         		["id" => $request->id]
         	);
     	if (count($wObject) > 0) {
@@ -57,16 +61,16 @@ class WeatherObjectRoutes {
 
     public function addNewWeatherObjectByToken(Request $request, Response $response) {
         $data = json_decode("{".$request->data."}");
-        $array = [
+        $object = json_encode([
             "temperature" => $data->data->environment[2],
             "pressure" => $data->data->environment[1],
             "humidity" => $data->data->environment[0],
             "brightness" => $data->data->light,
             "sensorObjectId" => 1
-        ]; 
+        ]); 
         if ($this->weatherObjectAdapter->addWeatherObjectByTokenToDatabase(
                 $request->token,
-                $this->weatherObjectAdapter->objectToWeatherObject($request->data)
+                $this->weatherObjectAdapter->objectToWeatherObject($object)
             )) {
             $response->json(true);
             return;
@@ -77,7 +81,7 @@ class WeatherObjectRoutes {
     public function replaceWeatherObject(Request $request, Response $response) {
         if ($this->weatherObjectAdapter->replaceWeatherObject(
         		$request->id,
-        		$this->weatherObjectAdapter->objectToWeatherObject(RoutesHelper::getHttpFormData()->json)
+        		$this->weatherObjectAdapter->objectToWeatherObject((new RoutesHelper)->getHttpFormData()->json)
         	)) {
         	$response->json(true);
         	return;
@@ -89,8 +93,8 @@ class WeatherObjectRoutes {
     	$possibleKeys = ["temperature", "humidity", "brightness", "pressure"];
     	$updateArray = [];
     	foreach ($possibleKeys as $key) {
-    		if (isset(RoutesHelper::getHttpFormData()->{$key})) {
-    			$updateArray[$key] = RoutesHelper::getHttpFormData()->{$key};
+    		if (isset((new RoutesHelper)->getHttpFormData()->{$key})) {
+    			$updateArray[$key] = (new RoutesHelper)->getHttpFormData()->{$key};
     		}
     	}
         if ($this->weatherObjectAdapter->updateWeatherObject($request->id, $updateArray)) {
