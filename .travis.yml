@@ -1,5 +1,6 @@
 language: php
 addons:
+  rethinkdb: "2.3"
   code_climate:
     repo_token: ca147b9a850ef5a8beb6868d69ea93e4a42a1c0a45c9701f170498bb4ee16585
 
