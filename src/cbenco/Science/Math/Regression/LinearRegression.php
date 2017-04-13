@@ -25,6 +25,7 @@ class LinearRegression implements IRegression {
 		$this->setParameterS();
 		$this->setParameterM();
 		$this->setParameterN();
+		$this->setCorrelationCoefficient();
 	}
 
 	public function setParameterS() {
@@ -34,7 +35,8 @@ class LinearRegression implements IRegression {
 			"xx" => $this->getAverage(array_map(function($xval) {return pow($xval, 2);}, array_keys($this->dataset))),
 			"xy" => $this->getAverage(array_map(function ($xval, $yval) {
 				return $this->multiply($xval, $yval);
-			}, array_keys($this->dataset), $this->dataset))
+			}, array_keys($this->dataset), $this->dataset)),
+			"yy" => $this->getAverage(array_map(function($yval) {return pow($yval, 2);}, $this->dataset))
 		];
 	}
 
@@ -74,6 +76,20 @@ class LinearRegression implements IRegression {
 
 	public function getParameterN() : float {
 		return $this->parameterN;
+	}
+
+	public function setCorrelationCoefficient() {
+		$this->correlationCoefficient = $this->divide(
+			$this->getParameterS("xy"),
+			$this->multiply(
+				sqrt($this->getParameterS("xx")),
+				sqrt($this->getParameterS("yy"))
+			)
+		);
+	}
+
+	public function getCorrelationCoefficient() {
+		return $this->correlationCoefficient;
 	}
 
 	public function getValueOf(float $newX) : float

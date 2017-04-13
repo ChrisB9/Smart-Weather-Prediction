@@ -20,6 +20,7 @@ trait BasicOperations
 	}
 
 	public function divide(float $numerator,float $denumerator): float {
+		if ($denumerator == 0) return 0;
 		return $numerator / $denumerator;
 	}
 

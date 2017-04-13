@@ -109,6 +109,10 @@ class SensorDeviceAdapter {
 		return $this->database->getLastId();
 	}
 
+	public function countSensorObjects() : int {
+		return $this->database->countDatabaseEntries($this->tableName);
+	}
+
 	public function objectToSensorObject($object) : SensorDeviceModel {
 		$sensorObject = new SensorDeviceModel();
 		$sensorObject->setDataByJson($object);

@@ -6,9 +6,12 @@ class RoutesHelper
 {
 	protected $phpInput;
 	protected $contentType;
+	private $formData;
+
 	public function __construct() {
 		$this->phpInput = $this->getPHPInput();
 		$this->contentType = $this->getServerContentType();
+		$this->formData = $this->getHttpFormData();
 	}
 
 	public function getPHPInput() {
@@ -25,6 +28,16 @@ class RoutesHelper
 
 	public function setServerContentType(string $contentType) {
 		$this->contentType = $contentType;
+	}
+
+	public function getFormDataArray(array $inputKeys) : array {
+		$result = [];
+		foreach ($inputKeys as $key) {
+    		if (isset($this->formData->{$key})) {
+    			$result[$key] = $this->formData->{$key};
+    		}
+    	}
+    	return $result;
 	}
 
 	public function getHttpFormData() {

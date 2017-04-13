@@ -32,7 +32,12 @@ class SensorDeviceRoutes {
 
     public function listDevices(Request $request, Response $response) {
         $response->json(
-            array_map(function($n){return (string) $n;}, $this->sensorDeviceAdapter->getSensorObjectFromDatabase())
+            array_map(
+                function($n) {
+                    return (string) $n;
+                }, 
+                $this->sensorDeviceAdapter->getSensorObjectFromDatabase()
+            )
         );
     }
 
@@ -75,13 +80,9 @@ class SensorDeviceRoutes {
     }
 
     public function updateDeviceObject(Request $request, Response $response) {
-        $possibleKeys = ["registerToken", "name", "date", "configObject"];
-    	$updateArray = [];
-    	foreach ($possibleKeys as $key) {
-    		if (isset((new RoutesHelper)->getHttpFormData()->{$key})) {
-    			$updateArray[$key] = (new RoutesHelper)->getHttpFormData()->{$key};
-    		}
-    	}
+    	$updateArray = (new RoutesHelper)->getFormDataArray(
+            ["registerToken", "name", "date", "configObject"]
+        );
         if ($this->sensorDeviceAdapter->updateSensorObject($request->id, $updateArray)) {
         	$response->json(true);
         	return;

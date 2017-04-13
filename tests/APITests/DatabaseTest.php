@@ -46,6 +46,11 @@ class DatabaseTest extends TestCase {
 		$this->assertTrue($this->weatherAdapter->addWeatherObjectToDatabase($this->getWeatherObjectModel()));
 	}
 
+	public function testCountingDatabaseEntries() {
+		$this->assertEquals(2, $this->weatherAdapter->countWeatherObjects());
+		$this->assertEquals(1, $this->sensorAdapter->countSensorObjects());
+	}
+
 	/**
 	 * @depends testInsertQueryWithWeatherObjectWithCorrectData
 	 */ 

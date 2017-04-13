@@ -75,6 +75,9 @@ class WeatherObjectAdapter {
 			case 1:
 				$result = $this->database->select($this->tableName, "*", $arguments[0]);
 				break;
+			case 2:
+				$result = $this->database->select($this->tableName, "*", $arguments[0], $arguments[1]);
+				break;
 			default:
 				$result = $this->database->select($this->tableName, "*");
 				break;
@@ -158,6 +161,10 @@ class WeatherObjectAdapter {
 			return $res[0]->getDeviceId();
 		}
 		return 0;
+	}
+
+	public function countWeatherObjects() : int {
+		return $this->database->countDatabaseEntries($this->tableName);
 	}
 
 	public function objectToWeatherObject($object) : Models\WeatherObjectModel {

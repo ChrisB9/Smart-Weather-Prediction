@@ -128,7 +128,7 @@ class QuadraticRegression implements IRegression {
 						$xval
 					),
 					$this->multiply(
-						$this->getParameterB(),
+						$this->getParameterC(),
 						pow($xval, 2)
 					)
 				)

@@ -86,6 +86,18 @@ class DatabaseFactory {
 			->run($this->database);
 	}
 
+	public function countDatabaseEntries(string $table) {
+		switch ($this->databaseConfig["database_type"]) {
+			case 'rethinkdb':
+				return ($this->getRethinkDbTable($table)
+					->info()
+					->getField("doc_count_estimates")
+					->run($this->database))[0];
+			default:
+				return $this->getDatabase()->count($table);
+		}
+	}
+
 	public function insert(string $table, $insert) {
 		switch ($this->databaseConfig["database_type"]) {
 			case "rethinkdb":
@@ -100,11 +112,20 @@ class DatabaseFactory {
 		}
 	}
 
-	public function select(string $table, $columns, $where = null) {
+	// TODO: rewrite method (to many ifs)
+	public function select(string $table, $columns, $where = null, int $limit = 0) {
 		switch ($this->databaseConfig["database_type"]) {
 			case "rethinkdb":
 				if (is_null($where)) {
+					if ($limit === 0) {
+						return $this->getRethinkDbTable($table)
+							->orderBy(['index' => rethinkdb\desc("id")])
+							->run($this->database)
+							->toArray();
+					}
 					return $this->getRethinkDbTable($table)
+						->orderBy(['index' => rethinkdb\desc("id")])
+						->limit($limit)
 						->run($this->database)
 						->toArray();
 				}
@@ -117,10 +138,11 @@ class DatabaseFactory {
 					->filter($where)
 					->run($this->database)
 					->toArray();
-				break;
 			default:
+				if ($limit > 0) {
+					$where["LIMIT"] = $limit;
+				}
 				return $this->getDatabase()->select($table, $columns, $where);
-				break;
 		}
 	}
 
