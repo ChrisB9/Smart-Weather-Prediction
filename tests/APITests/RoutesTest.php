@@ -133,34 +133,34 @@ class RoutesTest extends TestCase {
         $this->assertSame(json_encode(true), $objectRoute);
     }
 
-    public function testGetLatestForecasterRegression() {
-        $objectRoute = $this->dispatchAndReturnOutput(
-            MockRequestFactory::create("/vorhersager/regression")
-        );
-        $this->assertJson($objectRoute);
-    }
+    // public function testGetLatestForecasterRegression() {
+    //     $objectRoute = $this->dispatchAndReturnOutput(
+    //         MockRequestFactory::create("/vorhersager/regression")
+    //     );
+    //     $this->assertJson($objectRoute);
+    // }
 
-    public function testGetForecasterRegression() {
-        $objectRoute = $this->dispatchAndReturnOutput(
-            MockRequestFactory::create("/vorhersager/regression/l/10")
-        );
-        $this->assertJson($objectRoute, "linear");
-        $objectRoute = $this->dispatchAndReturnOutput(
-            MockRequestFactory::create("/vorhersager/regression/a/10")
-        );
-        $this->assertJson($objectRoute, "all");
-        $objectRoute = $this->dispatchAndReturnOutput(
-            MockRequestFactory::create("/vorhersager/regression/q/10")
-        );
-        $this->assertJson($objectRoute, "quadratic");
-    }
+    // public function testGetForecasterRegression() {
+    //     $objectRoute = $this->dispatchAndReturnOutput(
+    //         MockRequestFactory::create("/vorhersager/regression/l/10")
+    //     );
+    //     $this->assertJson($objectRoute, "linear");
+    //     $objectRoute = $this->dispatchAndReturnOutput(
+    //         MockRequestFactory::create("/vorhersager/regression/a/10")
+    //     );
+    //     $this->assertJson($objectRoute, "all");
+    //     $objectRoute = $this->dispatchAndReturnOutput(
+    //         MockRequestFactory::create("/vorhersager/regression/q/10")
+    //     );
+    //     $this->assertJson($objectRoute, "quadratic");
+    // }
 
-    public function testGetForecasterRegressionList() {
-        $objectRoute = $this->dispatchAndReturnOutput(
-            MockRequestFactory::create("/vorhersager/regression/10")
-        );
-        $this->assertJson($objectRoute);
-    }
+    // public function testGetForecasterRegressionList() {
+    //     $objectRoute = $this->dispatchAndReturnOutput(
+    //         MockRequestFactory::create("/vorhersager/regression/10")
+    //     );
+    //     $this->assertJson($objectRoute);
+    // }
 
     public function testGetWeatherObjectByNegativeId() {
         $objectRoute = $this->dispatchAndReturnOutput(
