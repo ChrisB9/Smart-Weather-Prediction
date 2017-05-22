@@ -86,6 +86,8 @@ class DatabaseFactory {
 			->run($this->database);
 	}
 
+	// retrieve all data with the same hour
+
 	public function countDatabaseEntries(string $table) {
 		switch ($this->databaseConfig["database_type"]) {
 			case 'rethinkdb':
@@ -213,6 +215,19 @@ class DatabaseFactory {
 				}
 				break;
 		}
+	}
+
+	public function createSecondaryIndex(string $tableName, string $secondIndex) : bool {
+		if ($this->databaseConfig["database_type"] !== "rethinkdb") return false;
+		if (!$this->checkIfTableExists($tableName)) return false;
+		$indexes = $this->getRethinkDbTable($tableName)
+			->indexList()
+			->run($this->database);
+		if (in_array($secondIndex, $indexes)) return false;
+		$this->getRethinkDbTable($tableName)
+			->indexCreate($secondIndex)
+			->run($this->database);
+		return true;
 	}
 
 	public function checkIfTableExists(string $tableName) : bool {

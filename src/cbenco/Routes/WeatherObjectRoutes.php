@@ -10,7 +10,6 @@ use cbenco\Forecaster\Controller\ForecastController;
 
 class WeatherObjectRoutes {
 	private $weatherObjectAdapter;
-    private $routeHelper;
 
 	public function __construct(WeatherObjectAdapter $weatherObjectAdapter) {
 		$this->weatherObjectAdapter = $weatherObjectAdapter;
@@ -74,6 +73,9 @@ class WeatherObjectRoutes {
             "pressure" => $data->data->environment[1],
             "humidity" => $data->data->environment[0],
             "brightness" => $data->data->light,
+            "cloudiness" => $data->owm->c,
+            "windspeed" => $data->owm->s,
+            "winddirection" => $data->owm->d,
             "sensorObjectId" => 1
         ]); 
         if ($this->weatherObjectAdapter->addWeatherObjectByTokenToDatabase(
@@ -99,7 +101,7 @@ class WeatherObjectRoutes {
 
     public function updateWeatherObject(Request $request, Response $response) {
     	$updateArray = (new RoutesHelper)->getFormDataArray(
-            ["temperature", "humidity", "brightness", "pressure"]
+            ["temperature", "humidity", "brightness", "pressure", "winddirection", "windspeed", "cloudiness"]
         );
         if ($this->weatherObjectAdapter->updateWeatherObject($request->id, $updateArray)) {
         	$response->json(true);

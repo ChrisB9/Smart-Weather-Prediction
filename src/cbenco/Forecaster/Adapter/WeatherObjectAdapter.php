@@ -21,23 +21,30 @@ class WeatherObjectAdapter {
 				$this->tableName
 			)
 		);
+		$this->database->createSecondaryIndex($this->tableName, "date");
+	}
+
+	private function insertArrayFromWeatherObject(Models\WeatherObjectModel $weatherObject) {
+		return [
+			"temperature" => $weatherObject->getTemperature(),
+			"humidity" => $weatherObject->getHumidity(),
+			"pressure" => $weatherObject->getPressure(),
+			"brightness" => $weatherObject->getBrightness(),
+			"cloudiness" => $weatherObject->getCloudiness(),
+			"windspeed" => $weatherObject->getWindspeed(),
+			"winddirection" => $weatherObject->getWinddirection(),
+			"sensorObjectId" => $weatherObject->sensorObjectId,
+			"date" => $weatherObject->creationDate->format(\DateTime::ATOM),
+			"deleted" => 0
+		];
 	}
 
 	public function addWeatherObjectToDatabase(Models\WeatherObjectModel $weatherObject) : bool {
 		if (!$this->validateSensorObject($weatherObject->sensorObjectId)) {
 			throw new \Exception("$weatherObject->sensorObjectId doesnt exist");
 		}
-		$insertArray = [
-			"temperature" => $weatherObject->getTemperature(),
-			"humidity" => $weatherObject->getHumidity(),
-			"pressure" => $weatherObject->getPressure(),
-			"brightness" => $weatherObject->getBrightness(),
-			"sensorObjectId" => $weatherObject->sensorObjectId,
-			"date" => $weatherObject->creationDate->format('Y-m-d H:i:s'),
-			"deleted" => 0
-		];
 		try {
-			$this->database->insert($this->tableName, $insertArray);
+			$this->database->insert($this->tableName, $this->insertArrayFromWeatherObject($weatherObject));
 			return true;
 		} catch (\PDOException $exception) {
 			echo $exception->getMessage();
@@ -49,23 +56,8 @@ class WeatherObjectAdapter {
 	public function addWeatherObjectByTokenToDatabase(string $token, Models\WeatherObjectModel $weatherObject) : bool {
 		$sensorToken = $this->getSensorIdByToken($token);
 		if ($sensorToken == 0) throw new \Exception("$token doesn't exist");
-		$insertArray = [
-			"temperature" => $weatherObject->getTemperature(),
-			"humidity" => $weatherObject->getHumidity(),
-			"pressure" => $weatherObject->getPressure(),
-			"brightness" => $weatherObject->getBrightness(),
-			"sensorObjectId" => $sensorToken,
-			"date" => $weatherObject->creationDate->format('Y-m-d H:i:s'),
-			"deleted" => 0
-		];
-		try {
-			$this->database->insert($this->tableName, $insertArray);
-			return true;
-		} catch (\PDOException $exception) {
-			echo $exception->getMessage();
-			return false;
-		}
-		
+		$weatherObject->sensorObjectId = $sensorToken;
+		return $this->addWeatherObjectToDatabase($weatherObject);
 	}
 
 	public function getWeatherObjectFromDatabase(...$arguments) : array {
@@ -95,13 +87,17 @@ class WeatherObjectAdapter {
 			"humidity" => $weatherObject->getHumidity(),
 			"pressure" => $weatherObject->getPressure(),
 			"brightness" => $weatherObject->getBrightness(),
+			"cloudiness" => $weatherObject->getCloudiness(),
+			"windspeed" => $weatherObject->getWindspeed(),
+			"winddirection" => $weatherObject->getWinddirection(),
 			"sensorObjectId" => $weatherObject->sensorObjectId
 		];
 		return $this->updateWeatherObject($uId, $replacementArray);
 	}
 
 	public function updateWeatherObject(int $uId, array $newValues) : bool {
-		$possibleKeys = ["temperature", "humidity", "pressure", "brightness", "sensorObjectId"];
+		$possibleKeys = ["temperature", "humidity", "pressure", "windspeed",
+			"brightness", "sensorObjectId", "cloudiness", "winddirection"];
 		foreach ($newValues as $key => $value) {
 			if (!in_array($key, $possibleKeys)) {
 				throw new \Exception("Unknown update variable $key");
@@ -171,5 +167,13 @@ class WeatherObjectAdapter {
 		$weatherObject = new Models\WeatherObjectModel();
         $weatherObject->setDataByJson($object);
         return $weatherObject;
+    }
+
+    private function resetDatabase() : bool {
+    	if ($this->database->checkIfTableExists($this->tableName)) {
+    		$this->database->deleteDatabase();
+    		return $this->database->checkIfTableExists($this->tableName);
+    	}
+    	return false;
     }
 }

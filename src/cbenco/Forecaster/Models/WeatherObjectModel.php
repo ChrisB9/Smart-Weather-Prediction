@@ -12,6 +12,9 @@ class WeatherObjectModel implements Interfaces\IWeatherObjectModel
     private $humidity;
     private $pressure;
     private $brightness;
+    private $cloudiness;
+    private $windspeed;
+    private $winddirection;
     private $uid;
 
     /**
@@ -30,6 +33,30 @@ class WeatherObjectModel implements Interfaces\IWeatherObjectModel
 
     public function getUId(): int {
         return $this->uid;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCloudiness(): float
+    {
+        return $this->cloudiness;
+    }
+
+    /**
+     * @return float
+     */
+    public function getWindspeed(): float
+    {
+        return $this->windspeed;
+    }
+
+    /**
+     * @return float
+     */
+    public function getWinddirection(): float
+    {
+        return $this->winddirection;
     }
 
     /**
@@ -67,6 +94,33 @@ class WeatherObjectModel implements Interfaces\IWeatherObjectModel
 
     public function setUId(int $uid) {
         $this->uid = $uid;
+    }
+
+    /**
+     * @param $cloudiness float
+     */
+    public function setCloudiness(float $cloudiness)
+    {
+        $this->cloudiness = $cloudiness;
+    }
+
+    /**
+     * @param $windspeed float
+     */
+    public function setWindspeed(float $windspeed)
+    {
+        $this->windspeed = $windspeed;
+    }
+
+    /**
+     * @param $winddirection int
+     */
+    public function setWinddirection(int $winddirection)
+    {
+        if ($winddirection < 0 || $winddirection > 360) {
+            throw new \Exception($winddirection.': winddirection has to be between 0 and 360 degree');
+        }
+        $this->winddirection = $winddirection;
     }
 
     /**
@@ -108,6 +162,9 @@ class WeatherObjectModel implements Interfaces\IWeatherObjectModel
         $this->setHumidity((float) $jsonObject->humidity);
         $this->setTemperature((float) $jsonObject->temperature);
         $this->setPressure((float) $jsonObject->pressure);
+        $this->setCloudiness((float) $jsonObject->cloudiness);
+        $this->setWinddirection((float) $jsonObject->winddirection);
+        $this->setWindspeed((float) $jsonObject->windspeed);
         if (isset($jsonObject->date)) {
             $this->creationDate = new \DateTime($jsonObject->date);
         }
@@ -130,6 +187,9 @@ class WeatherObjectModel implements Interfaces\IWeatherObjectModel
             "humidity" => $this->getHumidity(),
             "temperature" => $this->getTemperature(),
             "pressure" => $this->getPressure(),
+            "cloudiness" => $this->getCloudiness(),
+            "windspeed" => $this->getWindspeed(),
+            "winddirection" => $this->getWinddirection(),
             "date" => $this->creationDate
         ];
         return json_encode($ret);

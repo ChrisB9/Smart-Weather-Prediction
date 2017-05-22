@@ -29,6 +29,9 @@ class DatabaseTest extends TestCase {
 		$wom->setHumidity(100);
 		$wom->setPressure(904);
 		$wom->setTemperature(30);
+		$wom->setCloudiness(50);
+		$wom->setWinddirection(360);
+		$wom->setWindspeed(5);
 		$wom->sensorObjectId = 1;
 		return $wom;
 	}

@@ -20,7 +20,7 @@ class QuadraticRegression implements IRegression {
 	private function init() {
 		$this->averageX = $this->getAverage(array_keys($this->dataset));
 		$this->averageY = $this->getAverage($this->dataset);
-		$this->setParameterS($this->dataset);
+		$this->setParameterS();
 		$this->setParameterC();
 		$this->setParameterB();
 		$this->setParameterA();
@@ -142,7 +142,7 @@ class QuadraticRegression implements IRegression {
 		$this->correlationCoefficient = sqrt(1 - $this->divide($numerator, $denumerator));
 	}
 
-	private function setParameterS(array $dataset) {
+	private function setParameterS() {
 		$dataSetPow = array_map(function ($num) {
 						return pow($num, 2);
 					}, array_keys($this->dataset));

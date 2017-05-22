@@ -55,11 +55,9 @@ class RoutesHelper
 		}
 		foreach ($aBlocks as $id => $block) {
 			if (empty($block)) continue;
+			preg_match('/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s', $block, $matches);
 			if (strpos($block, 'application/octet-stream') !== FALSE) {
 				preg_match("/name=\"([^\"]*)\".*stream[\n|\r]+([^\n\r].*)?$/s", $block, $matches);
-			}
-			else {
-				preg_match('/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s', $block, $matches);
 			}
 			if ($matches) {
 			    $putData->{$matches[1]} = $matches[2];

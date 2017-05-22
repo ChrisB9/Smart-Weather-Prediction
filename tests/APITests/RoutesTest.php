@@ -54,6 +54,9 @@ class RoutesTest extends TestCase {
 		$wom->setHumidity(100);
 		$wom->setPressure(904);
 		$wom->setTemperature(30);
+        $wom->setCloudiness(50);
+        $wom->setWinddirection(360);
+        $wom->setWindspeed(5);
 		$wom->sensorObjectId = 1;
 		return $wom;
 	}
@@ -124,7 +127,7 @@ class RoutesTest extends TestCase {
             "/weather",
             "POST", [
                 "json" => 
-                '{"temperature": 32.30,"humidity": 20.1,"pressure": 1004,"brightness": 90,"sensorObjectId":1}'
+                '{"temperature": 32.30,"humidity": 20.1,"pressure": 1004,"brightness": 90,"cloudiness": 10,"windspeed": 40,"winddirection": 75,"sensorObjectId":1}'
             ]
         ];
         $objectRoute = $this->dispatchAndReturnOutput(
@@ -181,7 +184,7 @@ class RoutesTest extends TestCase {
             "/weather/token/123456",
             "POST", [
                 "data" => 
-                '"data":{"light":429120.000000,"environment":[18,99979.000000,32170.000000]}'
+                '"data":{"light":429120.000000,"environment":[18,99979.000000,32170.000000]},"owm":{"c":15,"d":156,"s":"4"}'
             ]
         ];
         $objectRoute = $this->dispatchAndReturnOutput(

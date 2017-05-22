@@ -35,10 +35,10 @@ class Router
     }
 
     public function registerRoutes(Klein $klein) {
-        $klein->respond('/', function($request) {
+        $klein->respond('/', function() {
             echo "Welcome!";
         });
-        $klein->onHttpError(function ($code, Klein $router) {
+        $klein->onHttpError(function ($code) {
             echo $code;
         });
 
